@@ -39,8 +39,20 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-// VERCEL SPECIFIC: We export a function that Vercel calls
+// VERCEL SPECIFIC: Initialize once, cache, and handle init errors gracefully
+let isServerInitialized = false;
 export default async (req: any, res: any) => {
-  await createNestServer(server);
+  if (!isServerInitialized) {
+    try {
+      await createNestServer(server);
+      isServerInitialized = true;
+    } catch (err) {
+      console.error('Error initializing Nest server:', err);
+      // Return a clear 500 so Vercel logs contain the error
+      res.status(500).json({ statusCode: 500, error: 'Server initialization failed', message: (err as any)?.message || 'Unknown error' });
+      return;
+    }
+  }
+
   server(req, res);
 };
