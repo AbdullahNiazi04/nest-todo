@@ -10,9 +10,15 @@ const databaseProvider = {
   provide: DATABASE_CONNECTION,
   inject: [ConfigService],
   useFactory: (configService: ConfigService) => {
-    const connectionString = configService.get<string>('DATABASE_URL');
+    let connectionString = configService.get<string>('DATABASE_URL');
     if (!connectionString) {
       throw new Error('DATABASE_URL is not set.');
+    }
+
+    // Trim surrounding quotes if present (sometimes copied with quotes)
+    connectionString = connectionString.trim();
+    if ((connectionString.startsWith("'") && connectionString.endsWith("'")) || (connectionString.startsWith('"') && connectionString.endsWith('"'))) {
+      connectionString = connectionString.slice(1, -1);
     }
 
     // neon-http approach (better for Vercel/Serverless)

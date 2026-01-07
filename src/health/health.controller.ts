@@ -8,10 +8,16 @@ export class HealthController {
 
   @Get()
   async check() {
-    const connectionString = this.configService.get<string>('DATABASE_URL');
+    let connectionString = this.configService.get<string>('DATABASE_URL');
 
     if (!connectionString) {
       return { status: 'error', message: 'DATABASE_URL not set' };
+    }
+
+    // Trim surrounding quotes if present (common mistake copying from .env with quotes)
+    connectionString = connectionString.trim();
+    if ((connectionString.startsWith("'") && connectionString.endsWith("'")) || (connectionString.startsWith('"') && connectionString.endsWith('"'))) {
+      connectionString = connectionString.slice(1, -1);
     }
 
     try {
@@ -28,10 +34,12 @@ export class HealthController {
         } catch (e) {
           // ignore
         }
-        return { status: 'error', message: err?.message || 'DB query failed' };
+        console.error('DB query error in /health:', err);
+        return { status: 'error', message: err?.message || 'DB query failed', stack: err?.stack };
       }
     } catch (err: any) {
-      return { status: 'error', message: err?.message || 'DB connection failed' };
+      console.error('DB connection error in /health:', err);
+      return { status: 'error', message: err?.message || 'DB connection failed', stack: err?.stack };
     }
   }
 }
