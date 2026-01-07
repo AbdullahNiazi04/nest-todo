@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://nest-todo-tawny.vercel.app',
+  baseURL: import.meta.env.VITE_API_URL || 'https://nest-todo-tawny.vercel.app/todos',
 });
 
 export const getTodos = async () => {
