@@ -13,7 +13,11 @@ export const createNestServer = async (expressInstance: express.Express) => {
     new ExpressAdapter(expressInstance),
   );
 
-  app.enableCors();
+  app.enableCors({
+    origin: ['https://nest-todo-wsjd.vercel.app', 'http://localhost:5173'], 
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  credentials: true,
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
