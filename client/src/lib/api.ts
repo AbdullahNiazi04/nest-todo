@@ -1,12 +1,11 @@
 import axios from 'axios';
 
 const API = axios.create({
-  // Remove '/todos' from here
-  baseURL: 'https://nest-todo-tawny.vercel.app', 
+  // Use Vite env variable (set VITE_API_URL in Vercel) or fallback to localhost
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
 });
 
 export const getTodos = async () => {
-  // Now this correctly hits https://nest-todo-tawny.vercel.app/todos
   const res = await API.get('/todos');
   return res.data;
 };
