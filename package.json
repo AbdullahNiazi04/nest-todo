@@ -21,7 +21,12 @@
     "db:push": "drizzle-kit push:pg",
     "db:push:pg": "drizzle-kit push:pg",
     "db:studio": "drizzle-kit studio",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "client:install": "cd client && npm install",
+    "client:dev": "cd client && npm run dev",
+    "client:build": "cd client && npm run build",
+    "client:preview": "cd client && npm run preview",
+    "client:lint": "cd client && npm run lint"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
