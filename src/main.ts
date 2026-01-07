@@ -7,6 +7,28 @@ import { HttpExceptionFilter } from './common/filters/https-exception.filter';
 
 const server = express();
 
+// Add a lightweight CORS middleware at the Express level to handle preflight
+// requests even before Nest is fully initialized (important in serverless).
+const allowedOrigins = [process.env.FRONTEND_URL || 'https://nest-todo-wsjd.vercel.app', 'http://localhost:5173'];
+server.use((req, res, next) => {
+  const origin = req.headers.origin as string | undefined;
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  }
+
+  res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+    return;
+  }
+
+  next();
+});
+
 export const createNestServer = async (expressInstance: express.Express) => {
   const app = await NestFactory.create(
     AppModule,
