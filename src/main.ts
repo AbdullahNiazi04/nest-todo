@@ -13,10 +13,7 @@ export const createNestServer = async (expressInstance: express.Express) => {
     new ExpressAdapter(expressInstance),
   );
 
-  // Enable CORS
   app.enableCors();
-
-  // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -24,28 +21,22 @@ export const createNestServer = async (expressInstance: express.Express) => {
       transform: true,
     }),
   );
-
-  // Global exception filter
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  return app.init();
+  // Use app.init() to prepare the NestJS application
+  await app.init();
 };
 
-// For local development
+// Local Development logic
 if (process.env.NODE_ENV !== 'production') {
-  createNestServer(server)
-    .then(() => {
-      const port = process.env.PORT || 3000;
-      server.listen(port, () => {
-        console.log(`Server is running on http://localhost:${port}`);
-      });
-    })
-    .catch((err) => {
-      console.error('Error starting server:', err);
-    });
+  createNestServer(server).then(() => {
+    const port = process.env.PORT || 3000;
+    server.listen(port, () => console.log(`Server: http://localhost:${port}`));
+  });
 }
 
-// Export for Vercel serverless
-createNestServer(server);
-
-export default server;
+// VERCEL SPECIFIC: We export a function that Vercel calls
+export default async (req: any, res: any) => {
+  await createNestServer(server);
+  server(req, res);
+};
