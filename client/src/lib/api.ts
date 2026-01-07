@@ -1,10 +1,12 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://nest-todo-tawny.vercel.app/todos',
+  // Remove '/todos' from here
+  baseURL: 'https://nest-todo-tawny.vercel.app', 
 });
 
 export const getTodos = async () => {
+  // Now this correctly hits https://nest-todo-tawny.vercel.app/todos
   const res = await API.get('/todos');
   return res.data;
 };
